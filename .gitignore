@@ -9,3 +9,6 @@ ltcgen
 jltcntp
 jltctrigger
 *.swp
+
+node_modules/*
+build/*
