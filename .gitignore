@@ -10,5 +10,7 @@ jltcntp
 jltctrigger
 *.swp
 
-node_modules/*
-build/*
+node_modules
+build
+prebuilds
+.vscode

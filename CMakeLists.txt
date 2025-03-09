@@ -44,7 +44,7 @@ set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/lib")
 
 # find_program(MAKE_EXECUTABLE NAMES make gmake REQUIRED)
 
-set_property(DIRECTORY PROPERTY EP_UPDATE_DISCONNECTED true)
+# set_property(DIRECTORY PROPERTY EP_UPDATE_DISCONNECTED true)
 
 ExternalProject_Add(libltc
     GIT_REPOSITORY      https://github.com/x42/libltc.git
@@ -57,12 +57,12 @@ ExternalProject_Add(libltc
 
 
 ExternalProject_Get_Property(libltc SOURCE_DIR)
-set(LTC_INCLUDE_DIR ${SOURCE_DIR})
+set(LTC_INCLUDE_DIR "${SOURCE_DIR}/src")
 ExternalProject_Get_Property(libltc BINARY_DIR)
-set(LTC_LIB_DIR ${BINARY_DIR})
+set(LTC_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 set(LTC_LIB libltc)
 
-message("LTC ${LTC_LIB_DIR}")
+message("----------------LTC--------------- ${LTC_LIB}")
 
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 set(CMAKE_INSTALL_RPATH "$ORIGIN")
@@ -71,7 +71,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${HEADER_FILES} ${CMAKE_JS_SR
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 target_include_directories(${PROJECT_NAME} PRIVATE ${LTC_INCLUDE_DIR})
 target_link_directories(${PROJECT_NAME} PRIVATE ${LTC_LIB_DIR})
-target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB} ${LTC_LIB})
+# target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB} ${LTC_LIB})
 add_dependencies(${PROJECT_NAME} libltc)
 
 # if(MSVC AND CMAKE_JS_NODELIB_DEF AND CMAKE_JS_NODELIB_TARGET)
@@ -79,9 +79,9 @@ add_dependencies(${PROJECT_NAME} libltc)
 #   execute_process(COMMAND ${CMAKE_AR} /def:${CMAKE_JS_NODELIB_DEF} /out:${CMAKE_JS_NODELIB_TARGET} ${CMAKE_STATIC_LINKER_FLAGS})
 # endif()
 
-# if(UNIX AND NOT APPLE)
-#   # copy built lib into build dir
-#   add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-#     COMMAND ${CMAKE_COMMAND} -E copy ${LTC_LIB_DIR}/libltc.so.0 ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}
-#   )
-# endif()
+if(UNIX AND NOT APPLE)
+  # copy built lib into build dir
+  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${LTC_LIB_DIR}/libltc.a ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}
+  )
+endif()

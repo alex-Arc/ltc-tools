@@ -1,9 +1,10 @@
 
-#ifndef NODE_LTC_WRAPPER_COMPRESS_H
-#define NODE_LTC_WRAPPER_COMPRESS_H
+#ifndef NODE_LTC_WRAPPER_H
+#define NODE_LTC_WRAPPER_H
 
-#include "../node_modules/node-addon-api/napi.h"
+#include <napi.h>
+using namespace Napi;
 
-Napi::Value ParseLtcChunk(const Napi::CallbackInfo &info);
+Value Fn(const CallbackInfo& info);
 
 #endif

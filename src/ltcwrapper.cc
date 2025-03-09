@@ -1,10 +1,18 @@
+#include <napi.h>
 #include "ltcwrapper.h"
 
-#include "../node_modules/node-addon-api/napi.h"
+using namespace Napi;
 
-Napi::Value ParseLtcChunk(const Napi::CallbackInfo &info) {
-  Napi::Env env = info.Env();
-
-  Napi::Number result = Napi::Number::New(env, 123456789);
-  return result;
+Value Fn(const CallbackInfo &info)
+{
+  Env env = info.Env();
+  // ...
+  return String::New(env, "Hello World");
 };
+
+Object Init(Env env, Object exports) {
+  exports.Set(String::New(env, "fn"), Function::New<Fn>(env));
+  return exports;
+}
+
+NODE_API_MODULE(ltc-tools, Init)

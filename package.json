@@ -2,18 +2,20 @@
   "name": "node-ltc-tools",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./index.js",
+  "types": "./module.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "pnpm cmake-js"
+    "test": "pnpm node testitout.js",
+    "install": "pkg-prebuilds-verify ./binding-options.js || cmake-js compile --target ltc-tools",
+    "build": "cmake-js build --target ltc-tools",
+    "rebuild": "cmake-js rebuild --target ltc-tools"
   },
   "binary": {
     "napi_versions": [
       7
     ]
   },
-  "types": "module.d.ts",
-  "keywords": [],
+  "keywords": [], 
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@8.10.2+sha256.487609e857f1c11780cc98dd0bfe4c8a8b11c7f23bc3a4493ac7d263d6fb6c8c",
