@@ -21,18 +21,18 @@ set(SOURCE_FILES
   "src/ltcwrapper.cc"
 )
 
-# set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/lib")
+set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/lib")
 
-if(UNIX AND NOT APPLE)
-  # build shared on linux, to avoid conflicts with lib???? built into electron
-  set(ENABLE_SHARED 1)
-  set(ENABLE_STATIC 0)
+# if(UNIX AND NOT APPLE)
+#   # build shared on linux, to avoid conflicts with lib???? built into electron
+#   set(ENABLE_SHARED 1)
+#   set(ENABLE_STATIC 0)
 
-else()
-  # build static elsewhere
-  set(ENABLE_SHARED 0)
-  set(ENABLE_STATIC 1)
-endif()
+# else()
+#   # build static elsewhere
+#   set(ENABLE_SHARED 0)
+#   set(ENABLE_STATIC 1)
+# endif()
 
 # Download and build libltc
 #ExternalProject_Add(libltc
@@ -44,22 +44,15 @@ endif()
 
 # find_program(MAKE_EXECUTABLE NAMES make gmake REQUIRED)
 
-# set_property(DIRECTORY PROPERTY EP_UPDATE_DISCONNECTED true)
+set_property(DIRECTORY PROPERTY EP_UPDATE_DISCONNECTED true)
 
 ExternalProject_Add(libltc
     GIT_REPOSITORY      https://github.com/x42/libltc.git
     GIT_TAG             master
-    SOURCE_DIR          "${CMAKE_BINARY_DIR}/libltc-src"
+    SOURCE_DIR          "${CMAKE_BINARY_DIR}/libltc"
     BUILD_IN_SOURCE     TRUE
-    # BINARY_DIR        "${CMAKE_BINARY_DIR}/libltc-build"
-    ENABLE_EXPORTS      TRUE
-    CONFIGURE_COMMAND   "./autogen.sh --enable-shared"
-    # COMMAND             "./configure --prefix=${CMAKE_INSTALL_PREFIX}"
+    CONFIGURE_COMMAND   "./autogen.sh" "--prefix=${CMAKE_INSTALL_PREFIX}" "--enable-static" "--disable-shared"
     BUILD_COMMAND       "make"
-    # INSTALL_COMMAND     "make install prefix=${CMAKE_INSTALL_PREFIX}"
-    # INSTALL_COMMAND     "make install"
-    # TEST_AFTER_INSTALL  TRUE
-    TEST_COMMAND        make check
 )
 
 
@@ -76,19 +69,19 @@ set(CMAKE_INSTALL_RPATH "$ORIGIN")
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${HEADER_FILES} ${CMAKE_JS_SRC})
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
-target_include_directories(${PROJECT_NAME} INTERFACE ${LTC_INCLUDE_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${LTC_INCLUDE_DIR})
 target_link_directories(${PROJECT_NAME} PRIVATE ${LTC_LIB_DIR})
 target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB} ${LTC_LIB})
 add_dependencies(${PROJECT_NAME} libltc)
 
-if(MSVC AND CMAKE_JS_NODELIB_DEF AND CMAKE_JS_NODELIB_TARGET)
-  # Generate node.lib
-  execute_process(COMMAND ${CMAKE_AR} /def:${CMAKE_JS_NODELIB_DEF} /out:${CMAKE_JS_NODELIB_TARGET} ${CMAKE_STATIC_LINKER_FLAGS})
-endif()
+# if(MSVC AND CMAKE_JS_NODELIB_DEF AND CMAKE_JS_NODELIB_TARGET)
+#   # Generate node.lib
+#   execute_process(COMMAND ${CMAKE_AR} /def:${CMAKE_JS_NODELIB_DEF} /out:${CMAKE_JS_NODELIB_TARGET} ${CMAKE_STATIC_LINKER_FLAGS})
+# endif()
 
-if(UNIX AND NOT APPLE)
-  # copy built lib into build dir
-  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy ${LTC_LIB_DIR}/libltc.so.0 ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}
-  )
-endif()
+# if(UNIX AND NOT APPLE)
+#   # copy built lib into build dir
+#   add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E copy ${LTC_LIB_DIR}/libltc.so.0 ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}
+#   )
+# endif()
