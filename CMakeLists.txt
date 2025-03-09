@@ -51,7 +51,7 @@ ExternalProject_Add(libltc
     GIT_TAG             master
     SOURCE_DIR          "${CMAKE_BINARY_DIR}/libltc"
     BUILD_IN_SOURCE     TRUE
-    CONFIGURE_COMMAND   "./autogen.sh" "--prefix=${CMAKE_INSTALL_PREFIX}" "--enable-static" "--disable-shared"
+    CONFIGURE_COMMAND   "./autogen.sh" "--prefix=${CMAKE_INSTALL_PREFIX}" #"--enable-static" "--disable-shared"
     BUILD_COMMAND       "make"
 )
 
@@ -61,8 +61,6 @@ set(LTC_INCLUDE_DIR "${SOURCE_DIR}/src")
 ExternalProject_Get_Property(libltc BINARY_DIR)
 set(LTC_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 set(LTC_LIB libltc)
-
-message("----------------LTC--------------- ${LTC_LIB}")
 
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 set(CMAKE_INSTALL_RPATH "$ORIGIN")
@@ -74,10 +72,10 @@ target_link_directories(${PROJECT_NAME} PRIVATE ${LTC_LIB_DIR})
 # target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB} ${LTC_LIB})
 add_dependencies(${PROJECT_NAME} libltc)
 
-# if(MSVC AND CMAKE_JS_NODELIB_DEF AND CMAKE_JS_NODELIB_TARGET)
-#   # Generate node.lib
-#   execute_process(COMMAND ${CMAKE_AR} /def:${CMAKE_JS_NODELIB_DEF} /out:${CMAKE_JS_NODELIB_TARGET} ${CMAKE_STATIC_LINKER_FLAGS})
-# endif()
+if(MSVC AND CMAKE_JS_NODELIB_DEF AND CMAKE_JS_NODELIB_TARGET)
+  # Generate node.lib
+  execute_process(COMMAND ${CMAKE_AR} /def:${CMAKE_JS_NODELIB_DEF} /out:${CMAKE_JS_NODELIB_TARGET} ${CMAKE_STATIC_LINKER_FLAGS})
+endif()
 
 if(UNIX AND NOT APPLE)
   # copy built lib into build dir

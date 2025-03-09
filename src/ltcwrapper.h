@@ -3,8 +3,10 @@
 #define NODE_LTC_WRAPPER_H
 
 #include <napi.h>
+#include <ltc.h>
+
 using namespace Napi;
 
-Value Fn(const CallbackInfo& info);
+Value Fn(const CallbackInfo &info);
 
 #endif
